@@ -168,6 +168,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <GitHubBanner />
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <CssBaseline />
@@ -207,6 +208,7 @@ function App() {
                   icon: <AccountCircleOutlined />,
                 },
               ]}
+              DashboardPage={Home}
               options={{
                 syncWithLocation: true,
                 warnWhenUnsavedChanges: true,
