@@ -13,6 +13,19 @@ import {
   ThemedLayoutV2,
 } from "@refinedev/mui";
 
+import { Layout } from "components/layout";
+import { Header } from "components/layout/header";
+import { Sider } from "components/layout/sider";
+import { Title } from "components/layout/title";   
+
+import {
+  AccountCircleOutlined,
+  ChatBubbleOutline,
+  PeopleAltOutlined,
+  StarOutlineOutlined,
+  VillaOutlined,
+} from "@mui/icons-material";
+
 import CssBaseline from "@mui/material/CssBaseline";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import routerBindings, {
@@ -36,12 +49,23 @@ import {
   CategoryList,
   CategoryShow,
 } from "pages/categories";
+import {
+  PropertyCreate,
+  PropertyEdit,
+  PropertyList,
+  PropertyShow,
+} from "pages/properties";
+import {
+  AgentList,
+  AgentShow,
+} from "pages/agents";
+import { Home, MyProfile } from "pages";
 import { Login } from "pages/login";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { parseJwt } from "utils/parse-jwt";
-import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
+import { MuiInferencer } from "@refinedev/inferencer/mui";
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
@@ -144,7 +168,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <CssBaseline />
@@ -158,24 +181,30 @@ function App() {
               i18nProvider={i18nProvider}
               resources={[
                 {
-                  name: "blog_posts",
-                  list: "/blog-posts",
-                  create: "/blog-posts/create",
-                  edit: "/blog-posts/edit/:id",
-                  show: "/blog-posts/show/:id",
-                  meta: {
-                    canDelete: true,
-                  },
+                  name: "property",
+                  list: MuiInferencer,
+                  icon: <VillaOutlined />,
                 },
                 {
-                  name: "categories",
-                  list: "/categories",
-                  create: "/categories/create",
-                  edit: "/categories/edit/:id",
-                  show: "/categories/show/:id",
-                  meta: {
-                    canDelete: true,
-                  },
+                  name: "agent",
+                  list: MuiInferencer,
+                  icon: <PeopleAltOutlined />,
+                },
+                {
+                  name: "review",
+                  list: MuiInferencer,
+                  icon: <StarOutlineOutlined />,
+                },
+                {
+                  name: "message",
+                  list: MuiInferencer,
+                  icon: <ChatBubbleOutline />,
+                },
+                {
+                  name: "my-profile",
+                  options: { label: 'My profile' },
+                  list: MuiInferencer,
+                  icon: <AccountCircleOutlined />,
                 },
               ]}
               options={{
@@ -183,48 +212,45 @@ function App() {
                 warnWhenUnsavedChanges: true,
               }}
             >
-              <Routes>
-                <Route
-                  element={
-                    <Authenticated fallback={<CatchAllNavigate to="/login" />}>
-                      <ThemedLayoutV2 Header={() => <Header isSticky={true} />}>
-                        <Outlet />
-                      </ThemedLayoutV2>
-                    </Authenticated>
-                  }
-                >
+              <Layout>
+                <Routes>
                   <Route
-                    index
-                    element={<NavigateToResource resource="blog_posts" />}
-                  />
-                  <Route path="/blog-posts">
-                    <Route index element={<BlogPostList />} />
-                    <Route path="create" element={<BlogPostCreate />} />
-                    <Route path="edit/:id" element={<BlogPostEdit />} />
-                    <Route path="show/:id" element={<BlogPostShow />} />
+                    element={
+                      <Authenticated fallback={<CatchAllNavigate to="/login" />}>
+                      </Authenticated>
+                    }
+                  >
+                    <Route
+                      index element={<NavigateToResource resource="blog_posts" />}
+                    />
+                    <Route path="/blog-posts">
+                      <Route index element={<BlogPostList />} />
+                      <Route path="create" element={<BlogPostCreate />} />
+                      <Route path="edit/:id" element={<BlogPostEdit />} />
+                      <Route path="show/:id" element={<BlogPostShow />} />
+                    </Route>
+                    <Route path="/categories">
+                      <Route index element={<CategoryList />} />
+                      <Route path="create" element={<CategoryCreate />} />
+                      <Route path="edit/:id" element={<CategoryEdit />} />
+                      <Route path="show/:id" element={<CategoryShow />} />
+                    </Route>
+                    <Route path="*" element={<ErrorComponent />} />
                   </Route>
-                  <Route path="/categories">
-                    <Route index element={<CategoryList />} />
-                    <Route path="create" element={<CategoryCreate />} />
-                    <Route path="edit/:id" element={<CategoryEdit />} />
-                    <Route path="show/:id" element={<CategoryShow />} />
+                  <Route
+                    element={
+                      <Authenticated fallback={<Outlet />}>
+                        <NavigateToResource />
+                      </Authenticated>
+                    }
+                  >
+                    <Route path="/login" element={<Login />} />
                   </Route>
-                  <Route path="*" element={<ErrorComponent />} />
-                </Route>
-                <Route
-                  element={
-                    <Authenticated fallback={<Outlet />}>
-                      <NavigateToResource />
-                    </Authenticated>
-                  }
-                >
-                  <Route path="/login" element={<Login />} />
-                </Route>
-              </Routes>
-
+                </Routes>
               <RefineKbar />
               <UnsavedChangesNotifier />
               <DocumentTitleHandler />
+              </Layout>
             </Refine>
           </RefineSnackbarProvider>
         </ColorModeContextProvider>
